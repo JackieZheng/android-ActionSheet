@@ -220,7 +220,7 @@ public class ActionSheet extends Fragment implements View.OnClickListener {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             Resources rs = context.getResources();
             int id = rs.getIdentifier("navigation_bar_height", "dimen", "android");
-            if (id > 0 && checkDeviceHasNavigationBar(context)) {
+            if (id > 0 && checkDeviceHasNavigationBar(context) && isNavigationBarShow(context)) {
                 navigationBarHeight = rs.getDimensionPixelSize(id);
             }
         }
@@ -251,6 +251,25 @@ public class ActionSheet extends Fragment implements View.OnClickListener {
 
     }
 
+    /** NavigationBar show state */   
+    public boolean isNavigationBarShow(Context context) {
+        Activity mContext = (Activity) context;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
+            Display display = mContext.getWindowManager().getDefaultDisplay();
+            Point size = new Point();
+            Point realSize = new Point();
+            display.getSize(size);
+            display.getRealSize(realSize);
+            return realSize.y != size.y;
+        }
+        else {
+            boolean menu = ViewConfiguration.get(context).hasPermanentMenuKey();
+            boolean back = KeyCharacterMap.deviceHasKey(KeyEvent.KEYCODE_BACK);
+            return !menu && !back;
+        }
+    }
+    
+    
     private void createItems() {
         String[] titles = getOtherButtonTitles();
         if (titles != null) {
